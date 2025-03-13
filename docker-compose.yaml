@@ -49,7 +49,7 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@tr3-mongodb:27017/
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@tr3-mongo:27017/
       ME_CONFIG_BASICAUTH: false
     depends_on:
       - tr3-mongo
@@ -62,8 +62,8 @@ services:
       MYSQL_DATABASE: tr3-Unity
     volumes:
       - mysql-bd:/var/lib/mysql:rw
-      - ./bd/mysql/create.sql:/docker-entrypoint-initdb.d/create.sql
-      - ./bd/mysql/inserts.sql:/docker-entrypoint-initdb.d/inserts.sql
+      - ./db/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./db/inserts.sql:/docker-entrypoint-initdb.d/inserts.sql
     ports:
       - 3306:3306
 
