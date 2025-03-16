@@ -1,7 +1,7 @@
-const { DataTypes } = require('sequelize');
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
 
-export default (sequelize) => {
-  return sequelize.define('Enemy', {
+const Enemy = sequelize.define('Enemy', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -31,4 +31,5 @@ export default (sequelize) => {
     tableName: 'enemies',
     timestamps: true,
   });
-}
+
+  export default Enemy;

@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
+import sequelize from "../config/database.js";
 
-export default (sequelize) => {
-  return sequelize.define('Level', {
+const Level = sequelize.define('Level', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -19,4 +19,5 @@ export default (sequelize) => {
     tableName: 'levels',
     timestamps: false,
   });
-};
+
+export default Level;

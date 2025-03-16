@@ -1,6 +1,7 @@
-const { DataTypes } = require('sequelize');
-export default (sequelize) => {
-    return sequelize.define('PowerUp', {
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
+
+const PowerUp = sequelize.define('PowerUp', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -26,4 +27,5 @@ export default (sequelize) => {
   tableName: 'powerUps',
   timestamps: true,
 });
-};
+
+export default PowerUp;

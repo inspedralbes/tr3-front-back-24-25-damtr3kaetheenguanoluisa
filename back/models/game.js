@@ -1,9 +1,7 @@
-import level from './level';
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
 
-const { DataTypes } = require('sequelize');
-
-export default (sequelize) => {
-    return sequelize.define('Game', {
+const Game = sequelize.define('Game', {
         id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -44,4 +42,5 @@ export default (sequelize) => {
         tableName: 'games',
         timestamps: true,
     });
-};
+
+export default Game;

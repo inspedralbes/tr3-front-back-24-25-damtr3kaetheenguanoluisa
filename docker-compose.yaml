@@ -12,6 +12,8 @@ services:
     depends_on:
       - tr3-mysql
       - tr3-mongo
+    networks:
+      - tr3-network
 
   tr3-front:
     image: node:23-bullseye
@@ -29,6 +31,8 @@ services:
       - CHOKIDAR_USEPOLLING=true
     links:
       - tr3-back
+    networks:
+      - tr3-network
 
   tr3-mongo:
     image: mongo
@@ -40,6 +44,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - mongo-bd:/data/db
+    networks:
+      - tr3-network
 
   tr3-mongo-express:
     image: mongo-express
@@ -53,19 +59,23 @@ services:
       ME_CONFIG_BASICAUTH: false
     depends_on:
       - tr3-mongo
+    networks:
+      - tr3-network
 
   tr3-mysql:
     image: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root 
-      MYSQL_DATABASE: tr3-Unity
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=tr3-Unity
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
     volumes:
       - mysql-bd:/var/lib/mysql:rw
-      - ./db/create.sql:/docker-entrypoint-initdb.d/create.sql
-      - ./db/inserts.sql:/docker-entrypoint-initdb.d/inserts.sql
     ports:
       - 3306:3306
+    networks:
+      - tr3-network
 
   tr3-adminer:
     image: adminer
@@ -76,7 +86,13 @@ services:
       ADMINER_DEFAULT_SERVER: tr3-mysql
     depends_on:
       - tr3-mysql
+    networks:
+      - tr3-network
 
 volumes:
   mysql-bd:
   mongo-bd:
+
+networks:
+  tr3-network:
+    driver: bridge
