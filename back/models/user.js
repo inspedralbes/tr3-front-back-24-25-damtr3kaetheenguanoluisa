@@ -25,7 +25,7 @@ const User = sequelize.define('User', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'players',
+      model: 'player',
       key: 'id',
     },
     onDelete: 'SET NULL ',
