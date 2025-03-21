@@ -19,16 +19,7 @@ const User = sequelize.define('User', {
   },
   password: {      
     type: DataTypes.STRING,
-    allowNull: false,
-  },
-  playerId: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'player',
-      key: 'id',
-    },
-    onDelete: 'SET NULL ',
+      allowNull: false
   },
 }, {
   tableName: 'users',

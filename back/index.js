@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import userRoutes from './routes/users.js';
+import playerRoutes from './routes/players.js';
 import sequelize from './config/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -32,6 +33,7 @@ mongoose.connect(process.env.MONGO_URI, {
 .catch((err) => console.error('Error al connectar a MongoDB', err));
 
 app.use('/users', userRoutes);
+app.use('/players', playerRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Benvingut al back!' });
@@ -42,7 +44,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: err.message || 'Something went wrong!' });
 });
 
-sequelize.sync()
+sequelize.sync({force: true})
   .then(() => {
     console.log('Base de datos sincronizada.');
     app.listen(PORT, () => {

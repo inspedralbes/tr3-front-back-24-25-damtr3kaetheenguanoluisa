@@ -1,45 +1,36 @@
 import { DataTypes } from 'sequelize';
-import sequelize from "../config/database.js";
+import sequelize from '../config/database.js';
 
-const Player = sequelize.define('player', {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    bombs: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    wins: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    enemiesEliminated: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    skinId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'skins',
-        key: 'id',
-      },
-      onDelete: 'SET NULL ',
-    },
-    powerUpId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'powerUps',
-        key: 'id',
-      },
-      onDelete: 'SET NULL ',
-    },
-  }, {
-    tableName: 'player',
-    timestamps: false,
-  });
+const Player = sequelize.define('Player', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  bombs: {
+    type: DataTypes.INTEGER,
+    defaultValue: 1,
+  },
+  victories: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  enemiesDefeated: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+}, {
+  tableName: 'players',
+  timestamps: false,
+});
 
 export default Player;
