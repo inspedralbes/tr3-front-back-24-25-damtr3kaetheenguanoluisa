@@ -12,6 +12,7 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
+    console.log("Datos recibidos en /register:", req.body);
     const { username,email, password } = req.body;
     
     const existingPlayer = await Player.findOne({ where: { username } });
@@ -50,6 +51,7 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
+    console.log("Login request received:", req.body); 
     const { username, password } = req.body;
 
     const player = await Player.findOne({ where: { username } });

@@ -15,6 +15,7 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, './.env') });
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 3020;
 
 app.use(express.json());
@@ -44,7 +45,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: err.message || 'Something went wrong!' });
 });
 
-sequelize.sync({force: true})
+sequelize.sync()
   .then(() => {
     console.log('Base de datos sincronizada.');
     app.listen(PORT, () => {
