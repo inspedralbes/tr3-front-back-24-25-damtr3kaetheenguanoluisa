@@ -7,6 +7,8 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 export function verifyTokenMiddleware(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
+  console.log('Token recibido:', token);  
+
   if (!token) {
       return res.status(401).json({ message: 'No token provided' });
   }

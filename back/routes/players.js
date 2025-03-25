@@ -1,20 +1,17 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { Player } from '../models/index.js';
-import { verifyTokenMiddleware } from '../token.js';
 
 dotenv.config();
-const SECRET_KEY = process.env.SECRET_KEY;
 
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
     console.log("Datos recibidos en /register:", req.body);
-    const { username,email, password } = req.body;
-    
+    const { username, email, password } = req.body;
+
     const existingPlayer = await Player.findOne({ where: { username } });
     if (existingPlayer) {
       return res.status(400).json({
@@ -51,7 +48,7 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    console.log("Login request received:", req.body); 
+    console.log("Login request received:", req.body);
     const { username, password } = req.body;
 
     const player = await Player.findOne({ where: { username } });
@@ -69,18 +66,10 @@ router.post('/login', async (req, res) => {
         message: 'Invalid credentials'
       });
     }
-    const token = jwt.sign(
-      {
-        id: player.id,
-        username: player.username,
-      },
-      SECRET_KEY,
-      { expiresIn: "1h" } 
-    );
+
     res.json({
       success: true,
       message: 'Login successful',
-      token,
       player: {
         id: player.id,
         username: player.username,
@@ -97,15 +86,20 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/:id/editar', verifyTokenMiddleware, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    if (req.user.id !== Number(req.params.id)) {
-      return res.status(403).json({ success: false, message: "Unauthorized" });
-    }
+    const players = await Player.findAll({ attributes: { exclude: ['password'] } });
+    res.json({ success: true, players });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
-    const player = await Player.findByPk(req.params.id);
+router.get('/:id', async (req, res) => {
+  try {
+    const player = await Player.findByPk(req.params.id, { attributes: { exclude: ['password'] } });
     if (player) {
-      res.render('player/editar', { player });
+      res.json({ success: true, player });
     } else {
       res.status(404).json({ success: false, message: 'Player not found' });
     }
@@ -114,18 +108,14 @@ router.get('/:id/editar', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-router.post('/:id', verifyTokenMiddleware, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
-    if (req.user.id !== Number(req.params.id)) {
-      return res.status(403).json({ success: false, message: "Unauthorized" });
-    }
-
-    const { username, password, bombs, victories, enemiesDefeated, velocity, skinId, powerUpId } = req.body;
+    const { username, password, bombs, victories, enemiesDefeated } = req.body;
     const player = await Player.findByPk(req.params.id);
 
     if (player) {
-      const updatedData = { username, bombs, victories, enemiesDefeated, velocity, skinId, powerUpId };
-      
+      const updatedData = { username, bombs, victories, enemiesDefeated };
+
       if (password) {
         updatedData.password = await bcrypt.hash(password, 10);
       }
@@ -140,11 +130,8 @@ router.post('/:id', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/:id', verifyTokenMiddleware, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    if (req.user.id !== Number(req.params.id)) {
-      return res.status(403).json({ success: false, message: "Unauthorized" });
-    }
     const player = await Player.findByPk(req.params.id);
     if (player) {
       await player.destroy();
