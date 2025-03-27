@@ -1,7 +1,11 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import  {Users} from '../models/index.js';
+import { verifyTokenMiddleware } from '../token.js';
+
 const router = express.Router();
+const SECRET_KEY =process.env.SECRET_KEY;
 
 async function hashPassword(password) {
   const salt = await bcrypt.genSalt(10);
@@ -50,6 +54,14 @@ router.post('/login', async (req, res) => {
         message: 'Invalid credentials' 
       });
     }
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username: user.username,
+      },
+      SECRET_KEY,
+      { expiresIn: "1h" } 
+    );
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
@@ -62,6 +74,7 @@ router.post('/login', async (req, res) => {
     res.json({
       success: true,
       message: 'Login successful',
+      token,
       user: { 
         id: user.id, 
         userName: user.userName, 
@@ -77,7 +90,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/',verifyTokenMiddleware, async (req, res) => {
   try {
     const users = await Users.findAll();
     res.json(users);
@@ -86,7 +99,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id',verifyTokenMiddleware, async (req, res) => {
   try {
     const user = await Users.findByPk(req.params.id);
     if (user) {
@@ -99,18 +112,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/newUser', async (req, res) => {
-  try {
-    const { userName, password } = req.body;
-    const hashedPassword = await hashPassword(password);
-    const newUser = await Users.create({ userName, password: hashedPassword });
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-});
-
-router.put('/:id', async (req, res) => {
+router.put('/:id',verifyTokenMiddleware, async (req, res) => {
   try {
     const { userName, email, password } = req.body;
     const user = await Users.findByPk(req.params.id);
@@ -130,7 +132,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',verifyTokenMiddleware, async (req, res) => {
   try {
     const user = await Users.findByPk(req.params.id);
     if (user) {

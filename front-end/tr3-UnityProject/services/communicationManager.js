@@ -1,4 +1,4 @@
-const URL ='http://localhost:3020';
+const URL = 'http://localhost:3020';
 
 export async function registerUser(username, email, password) {
   try {
@@ -42,6 +42,7 @@ export async function loginUser(email, password) {
 
     if (data.success) {
       localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token); 
       return data;
     } else {
       throw new Error(data.message || "Login failed");
@@ -53,11 +54,28 @@ export async function loginUser(email, password) {
 }
 
 export async function getStats() {
-  const user = JSON.parse(localStorage.getItem('user'));
-  if (!user) {
-    throw new Error('No user found');
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    throw new Error('No token found. Please log in.');
   }
 
-  const response = await fetch(`${URL}/stats/${user.id}`);
-  return response.json();
+  try {
+    const response = await fetch(`${URL}/stats`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`, 
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch stats');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    throw error;
+  }
 }

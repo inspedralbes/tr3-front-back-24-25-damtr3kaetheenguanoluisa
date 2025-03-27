@@ -10,13 +10,17 @@
       </div>
 
       <nav class="nav-menu">
-        <NuxtLink to="/nemuGame" class="nav-item">
+        <NuxtLink to="/menuGame" class="nav-item">
           <div class="nav-icon home-icon"></div>
           <span>Inici</span>
         </NuxtLink>
         <NuxtLink to="/manage" class="nav-item">
           <div class="nav-icon stages-icon"></div>
-          <span>Administració Bomberman</span>
+          <span>Administració Enemics</span>
+        </NuxtLink>
+        <NuxtLink to="/players" class="nav-item">
+          <div class="nav-icon characters-icon"></div>
+          <span>Administració Jugadors</span>
         </NuxtLink>
         <NuxtLink to="/stats" class="nav-item">
           <div class="nav-icon powers-icon"></div>
