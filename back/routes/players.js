@@ -74,6 +74,7 @@ router.post('/login', async (req, res) => {
         id: player.id,
         username: player.username,
         bombs: player.bombs,
+        speed:player.speed,
         victories: player.victories,
         enemiesDefeated: player.enemiesDefeated
       }
@@ -108,13 +109,44 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+  router.post('/updateUsers', async (req, res) => {
+    try {
+      const players = req.body.players;
+
+      for (const player of players) {
+        const dbPlayer = await Player.findByPk(player.id);
+
+        if (dbPlayer) {
+          await dbPlayer.update({
+            bombAmount: player.bombAmount,
+            bombsUsed: player.bombsUsed,
+            speed: player.speed,
+            victories: player.victories,
+            enemiesDefeated: player.enemiesDefeated
+          });
+        }
+      }
+
+      return res.json({
+        success: true,
+        message: "Stats actualitzades correctament"
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+});
+
+
 router.put('/:id', async (req, res) => {
   try {
-    const { username, password, bombs, victories, enemiesDefeated } = req.body;
+    const { username, password, bombs, bombsUsed, speed, victories, enemiesDefeated } = req.body;
     const player = await Player.findByPk(req.params.id);
 
     if (player) {
-      const updatedData = { username, bombs, victories, enemiesDefeated };
+      const updatedData = { username, bombs, bombsUsed, speed, victories, enemiesDefeated };
 
       if (password) {
         updatedData.password = await bcrypt.hash(password, 10);

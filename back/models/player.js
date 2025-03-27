@@ -18,7 +18,15 @@ const Player = sequelize.define('Player', {
   },
   bombs: {
     type: DataTypes.INTEGER,
-    defaultValue: 1,
+    defaultValue: 10,
+  },
+  bombsUsed:{
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  speed:{
+    type: DataTypes.INTEGER,
+    defaultValue:5,
   },
   victories: {
     type: DataTypes.INTEGER,
