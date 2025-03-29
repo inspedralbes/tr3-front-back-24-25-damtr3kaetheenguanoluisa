@@ -9,16 +9,13 @@
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = dirname(__filename);
 
-// dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+// dotenv.config({ path: path.resolve(__dirname, '../../../back/.env') });
 
 // const app = express();
 // app.use(cors());
 // app.use(express.json());
 
 // const port = process.env.PORT_MONGO;
-// const user = process.env.MONGO_USER;
-// const password = process.env.MONGO_PASSWORD;
-// const cluster = process.env.MONGO_CLUSTER;
 
 // const logSchema = new mongoose.Schema({
 //   microservei: { type: String, required: true },
@@ -58,7 +55,7 @@
 //         console.error(err);
 //       }
 //     });
-//     mongoose.connect(`mongodb+srv://${user}:${password}@${cluster}.hrrx5.mongodb.net/?retryWrites=true&w=majority&appName=TR2G6`)
+//     mongoose.connect(process.env.MONGO_CLUSTER)
 //       .then(() => console.log("Connectat a MongoDB"))
 //       .catch(err => console.error('Error en connectar a MongoDB Atlas:', err));
 //   }

@@ -1,59 +1,55 @@
 <template>
-  <div class="login-container">
-    <div class="game-screen">
-      <div class="game-title">
-        <div class="bomb-sprite"></div>
-        <h1>BOMBERMAN</h1>
-        <div class="bomb-sprite"></div>
-      </div>
-      
-      <div class="login-form">
-        <h2>LOGIN</h2>
-        
-        <div class="form-group">
-          <label for="email">EMAIL:</label>
-          <input 
-            type="text" 
-            id="email" 
-            v-model="email" 
-            class="retro-input"
-            autocomplete="email"
-          />
+  <div class="admin-container">
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="login-card">
+        <div class="card-header">
+          <div class="header-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+          <h1>Login</h1>
         </div>
-        
-        <div class="form-group">
-          <label for="password">PASSWORD:</label>
-          <input 
-            type="password" 
-            id="password" 
-            v-model="password" 
-            class="retro-input"
-            autocomplete="current-password"
-          />
-        </div>
-        
-        <div class="button-row">
-          <button @click="handleLogin" class="retro-button primary-button">
-            LOG IN
-          </button>
+
+        <div class="login-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input 
+              type="email" 
+              id="email" 
+              v-model="email" 
+              class="modern-input"
+              autocomplete="email"
+              placeholder="Enter your email"
+            />
+          </div>
           
-          <NuxtLink to="/register" class="retro-button secondary-button">
-            REGISTER
-          </NuxtLink>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              v-model="password" 
+              class="modern-input"
+              autocomplete="current-password"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <div class="error-message" v-if="error">{{ error }}</div>
+          
+          <div class="button-group">
+            <button @click="handleLogin" class="primary-button">
+              Login
+            </button>
+            <NuxtLink to="/register" class="secondary-button">
+              Create Account
+            </NuxtLink>
+          </div>
         </div>
       </div>
-      
-      <div class="block-decoration">
-        <div class="brick"></div>
-        <div class="solid"></div>
-        <div class="brick"></div>
-        <div class="solid"></div>
-        <div class="brick"></div>
-        <div class="solid"></div>
-        <div class="brick"></div>
-        <div class="solid"></div>
-      </div>
-    </div>
+    </main>
   </div>
 </template>
 
@@ -74,7 +70,7 @@ async function handleLogin() {
     
     if (response.success) {
       console.log('Login successful')
-      await router.push('/menuGame')
+      await router.push('/players')
     } else {
       error.value = response.message || 'Login failed'
     }
@@ -86,205 +82,200 @@ async function handleLogin() {
 </script>
 
 <style scoped>
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #000;
-  font-family: 'Courier New', monospace;
-  padding: 20px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.game-screen {
-  background-color: #223;
-  border: 8px solid #445;
-  border-radius: 8px;
+html, body {
+  height: 100%;
   width: 100%;
-  max-width: 500px;
-  padding: 20px;
-  box-shadow: 0 0 20px rgba(0, 0, 255, 0.3);
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
-.game-title {
+.admin-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #1a1a2e;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.main-content {
+  flex-grow: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 30px;
+  width: 100%;
+  height: 100%;
 }
 
-.game-title h1 {
-  color: #fff;
-  font-size: 32px;
+.login-card {
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 450px;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-header {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  padding: 30px;
   text-align: center;
-  text-shadow: 2px 2px 0 #f00, 4px 4px 0 #00f;
-  margin: 0 20px;
-  letter-spacing: 2px;
-}
-
-.bomb-sprite {
-  width: 32px;
-  height: 32px;
-  background-color: #000;
-  border-radius: 50%;
   position: relative;
 }
 
-.bomb-sprite:before {
-  content: '';
-  position: absolute;
-  width: 8px;
-  height: 10px;
-  background-color: #888;
-  top: -8px;
-  left: 12px;
+.header-icon {
+  width: 70px;
+  height: 70px;
+  background-color: white;
+  border-radius: 50%;
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.bomb-sprite:after {
-  content: '';
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: #f00;
-  top: -12px;
-  left: 11px;
-  box-shadow: 0 0 5px #f00;
+.header-icon svg {
+  width: 42px;
+  height: 42px;
+  fill: #3498db;
+}
+
+.card-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .login-form {
-  background-color: #335;
-  padding: 20px;
-  border: 4px solid #557;
-  margin-bottom: 30px;
-}
-
-.login-form h2 {
-  color: #fff;
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
+  padding: 30px;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 22px;
 }
 
 .form-group label {
   display: block;
-  color: #fff;
   margin-bottom: 8px;
-  font-weight: bold;
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 0.95rem;
 }
 
-.retro-input {
+.modern-input {
   width: 100%;
-  background-color: #111;
-  border: 3px solid #557;
-  padding: 8px;
-  color: #0f0;
-  font-family: 'Courier New', monospace;
-  font-size: 16px;
+  padding: 14px;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
 }
 
-.retro-input:focus {
+.modern-input:focus {
+  border-color: #3498db;
   outline: none;
-  border-color: #77a;
-  box-shadow: 0 0 5px #77a;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  background-color: white;
 }
 
-.button-row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 30px;
-}
-
-.retro-button {
-  padding: 10px 15px;
-  font-family: 'Courier New', monospace;
-  font-weight: bold;
-  font-size: 16px;
-  border: 3px solid #000;
-  cursor: pointer;
-  text-decoration: none;
-  text-align: center;
-}
-
-.primary-button {
-  background-color: #f00;
-  color: #fff;
-  border-color: #900;
-  width: 48%;
-}
-
-.primary-button:hover {
-  background-color: #d00;
-}
-
-.secondary-button {
-  background-color: #00f;
-  color: #fff;
-  border-color: #009;
-  width: 48%;
-}
-
-.secondary-button:hover {
-  background-color: #00d;
+.modern-input::placeholder {
+  color: #adb5bd;
 }
 
 .error-message {
-  margin-top: 15px;
-  color: #f00;
+  color: #e74c3c;
+  margin-bottom: 20px;
   text-align: center;
-  font-weight: bold;
+  font-size: 0.9rem;
+  background-color: rgba(231, 76, 60, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 3px solid #e74c3c;
 }
 
-.block-decoration {
+.button-group {
   display: flex;
-  width: 100%;
+  gap: 15px;
+  margin-top: 30px;
 }
 
-.brick, .solid {
-  width: 12.5%;
-  height: 32px;
+.primary-button, .secondary-button {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.brick {
-  background-color: #963;
-  position: relative;
+.primary-button {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
 }
 
-.brick:before, .brick:after {
-  content: '';
-  position: absolute;
-  background-color: #742;
+.secondary-button {
+  background-color: #e9ecef;
+  color: #2c3e50;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-.brick:before {
-  width: 100%;
-  height: 2px;
-  top: 10px;
+.primary-button:hover, .secondary-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
-.brick:after {
-  width: 2px;
-  height: 100%;
-  left: 10px;
+.primary-button:active, .secondary-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
 .solid {
-  background-color: #666;
-  border: 1px solid #888;
+  background-color: #7f8c8d;
 }
 
-@media (max-width: 576px) {
-  .button-row {
-    flex-direction: column;
+@media (max-width: 768px) {
+  .login-card {
+    width: 95%;
+    margin: 0;
   }
-  
-  .primary-button, .secondary-button {
-    width: 100%;
-    margin-bottom: 10px;
+
+  .card-header {
+    padding: 25px;
+  }
+
+  .login-form {
+    padding: 25px;
+  }
+
+  .button-group {
+    flex-direction: column;
   }
 }
 </style>
