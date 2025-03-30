@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { spawn } from 'child_process';
 import userRoutes from './routes/users.js';
 import playerRoutes from './routes/players.js';
 import sequelize from './config/database.js';
@@ -44,6 +45,54 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: err.message || 'Something went wrong!' });
 });
+
+const mongoService = { state: "stopped", process: null };
+
+app.use("/mongo-service", (req, res) => {
+  let message = "Servei MongoDB iniciat";
+
+  if (mongoService.state === "stopped") {
+    console.log("Iniciant el servei de MongoDB...");
+    startMongoService();
+    mongoService.state = "started";
+  } else {
+    console.log("Parant el servei de MongoDB...");
+    stopMongoService();
+    mongoService.state = "stopped";
+    message = "Servei de MongoDB detingut";
+  }
+
+  res.send({ message });
+});
+
+function startMongoService() {
+  const microservicePath = path.resolve(__dirname, 'microserveis/mongoDB/index.js');
+  const process = spawn('node', [microservicePath]);
+
+  mongoService.process = process;
+
+  process.stdout.on('data', data => {
+    console.log("Mongo Service log: ", data.toString());
+  });
+
+  process.stderr.on('data', data => {
+    console.error("Mongo Service error: ", data.toString());
+  });
+
+  process.on('close', code => {
+    console.log(`Mongo Service stopped with code ${code}`);
+    mongoService.state = "stopped";
+    mongoService.process = null;
+  });
+}
+startMongoService();
+
+function stopMongoService() {
+  if (mongoService.process) {
+    mongoService.process.kill();
+    mongoService.process = null;
+  }
+}
 
 sequelize.sync()
   .then(() => {

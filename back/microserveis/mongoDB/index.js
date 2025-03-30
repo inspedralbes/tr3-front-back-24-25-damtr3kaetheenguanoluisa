@@ -1,83 +1,76 @@
-// import express from 'express';
-// import cors from 'cors';
-// import path from 'path';
-// import mongoose from 'mongoose';
-// import dotenv from 'dotenv';
-// import { fileURLToPath } from 'url';
-// import { dirname } from 'path';
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-// dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-// const app = express();
-// app.use(cors());
-// app.use(express.json());
+const app = express();
+const port = process.env.PORT_MONGO ;
 
-// const port = process.env.PORT_MONGO;
-// const user = process.env.MONGO_USER;
-// const password = process.env.MONGO_PASSWORD;
-// const cluster = process.env.MONGO_CLUSTER;
+app.use(cors());
+app.use(express.json());
 
-// const logSchema = new mongoose.Schema({
-//   microservei: { type: String, required: true },
-//   message: { type: String, required: true },
-//   timestamp: { type: Date, default: Date.now },
-// });
+const bombesSchema = new mongoose.Schema({
+  player1Bombs: { type: Number, required: true },
+  player2Bombs: { type: Number, required: true },
+  timestamp: { type: Date, default: Date.now }
+});
 
-// const Log = mongoose.model('Log', logSchema);
+const enemicsEliminatsSchema = new mongoose.Schema({
+  player1Enemy: { type: Number, required: true },
+  player2Enemy: { type: Number, required: true },
+  timestamp: { type: Date, default: Date.now }
+});
 
-// async function logMessage(microservei, message) {
-//   try {
-//     const log = new Log({ microservei, message });
-//     await log.save();
-//   } catch (err) {
-//     console.error('Error en guardar el log:', err);
-//   }
-// }
+const Bombes = mongoose.model('Bombes', bombesSchema);
+const EnemicsEliminats = mongoose.model('EnemicsEliminats', enemicsEliminatsSchema);
 
-// async function getLogs(microservei) {
-//   try {
-//     const logs = await Log.find({ microservei }).sort({ timestamp: -1 });
-//     return logs;
-//   } catch (err) {
-//     console.error('Error en obtenir els logs:', err);
-//     return [];
-//   }
-// }
 
-// process.on('message', async (message) => {
-//   if (message.action === 'start') {
-//     app.listen(port, () => {
-//       console.log(`Servei de MongoDB corrent a ${port}`);
-//     }).on('error', (err) => {
-//       if (err.code === 'EADDRINUSE') {
-//         console.log(`El port ${port} ja està en ús, però el servidor està funcionant.`);
-//       } else {
-//         console.error(err);
-//       }
-//     });
-//     mongoose.connect(`mongodb+srv://${user}:${password}@${cluster}.hrrx5.mongodb.net/?retryWrites=true&w=majority&appName=TR2G6`)
-//       .then(() => console.log("Connectat a MongoDB"))
-//       .catch(err => console.error('Error en connectar a MongoDB Atlas:', err));
-//   }
-//   if (message.action === 'stop') {
-//     process.send('exit');
-//     process.exit();
-//   }
-//   if (message.action === 'getLog') {
-//     const logs = await getLogs(message.servei);
-//     const simplifiedLogs = logs.map(log => ({
-//       message: log.message,
-//       timestamp: log.timestamp
-//     }));
-//     process.send({ logs: simplifiedLogs });
-//   }
-//   if (message.action === 'encendreLog') {
-//     await logMessage(message.servei, `Microservei de ${message.servei} encés.`);
-//   }
-//   if (message.action === 'apagarLog') {
-//     await logMessage(message.servei, `Microservei de ${message.servei} apagat.`);
-//   }
-// });
+app.post('/bombes', async (req, res) => {
+  try {
+    const bombes = new Bombes(req.body);
+    await bombes.save();
+    res.status(201).json({ message: 'Bombes guardades', data: bombes });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/bombes', async (req, res) => {
+  try {
+    const bombes = await Bombes.find();
+    res.json(bombes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/enemics', async (req, res) => {
+  try {
+    const enemic = new EnemicsEliminats(req.body);
+    await enemic.save();
+    res.status(201).json({ message: 'Enemics guardats', data: enemic });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/enemics', async (req, res) => {
+  try {
+    const enemics = await EnemicsEliminats.find();
+    res.json(enemics);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Microservei MongoDB escoltant en el port ${port}`);
+});

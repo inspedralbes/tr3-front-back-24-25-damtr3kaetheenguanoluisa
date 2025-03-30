@@ -2,10 +2,43 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import { Player } from '../models/index.js';
+import fetch from 'node-fetch';
 
 dotenv.config();
 
 const router = express.Router();
+const MONGO_SERVICE_URL = 'http://localhost:3021';
+
+// Función auxiliar para guardar estadísticas en MongoDB
+async function saveStatsToMongo(player1Stats, player2Stats) {
+  try {
+    // Guardar bombas usadas
+    await fetch(`${MONGO_SERVICE_URL}/bombes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        player1Bombs: player1Stats.bombsUsed || 0,
+        player2Bombs: player2Stats.bombsUsed || 0
+      })
+    });
+
+    // Guardar enemigos eliminados
+    await fetch(`${MONGO_SERVICE_URL}/enemics`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        player1Enemy: player1Stats.enemiesDefeated || 0,
+        player2Enemy: player2Stats.enemiesDefeated || 0
+      })
+    });
+  } catch (error) {
+    console.error('Error guardando estadísticas en MongoDB:', error);
+  }
+}
 
 router.post('/register', async (req, res) => {
   try {
@@ -109,36 +142,41 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-  router.post('/updateUsers', async (req, res) => {
-    try {
-      const players = req.body.players;
+router.post('/updateUsers', async (req, res) => {
+  try {
+    const players = req.body.players;
 
-      for (const player of players) {
-        const dbPlayer = await Player.findByPk(player.id);
+    // Actualizar en MySQL
+    for (const player of players) {
+      const dbPlayer = await Player.findByPk(player.id);
 
-        if (dbPlayer) {
-          await dbPlayer.update({
-            bombAmount: player.bombAmount,
-            bombsUsed: player.bombsUsed,
-            speed: player.speed,
-            victories: player.victories,
-            enemiesDefeated: player.enemiesDefeated
-          });
-        }
+      if (dbPlayer) {
+        await dbPlayer.update({
+          bombAmount: player.bombAmount,
+          bombsUsed: player.bombsUsed,
+          speed: player.speed,
+          victories: player.victories,
+          enemiesDefeated: player.enemiesDefeated
+        });
       }
-
-      return res.json({
-        success: true,
-        message: "Stats actualitzades correctament"
-      });
-    } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message
-      });
     }
-});
 
+    // Guardar estadísticas en MongoDB
+    if (players.length >= 2) {
+      await saveStatsToMongo(players[0], players[1]);
+    }
+
+    return res.json({
+      success: true,
+      message: "Stats actualitzades correctament"
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
 
 router.put('/:id', async (req, res) => {
   try {
