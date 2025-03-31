@@ -1,44 +1,19 @@
 import express from 'express';
+import path from 'path';
 import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
 import { Player } from '../models/index.js';
-import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const router = express.Router();
-const MONGO_SERVICE_URL = 'http://localhost:3021';
 
-// Función auxiliar para guardar estadísticas en MongoDB
-async function saveStatsToMongo(player1Stats, player2Stats) {
-  try {
-    // Guardar bombas usadas
-    await fetch(`${MONGO_SERVICE_URL}/bombes`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        player1Bombs: player1Stats.bombsUsed || 0,
-        player2Bombs: player2Stats.bombsUsed || 0
-      })
-    });
-
-    // Guardar enemigos eliminados
-    await fetch(`${MONGO_SERVICE_URL}/enemics`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        player1Enemy: player1Stats.enemiesDefeated || 0,
-        player2Enemy: player2Stats.enemiesDefeated || 0
-      })
-    });
-  } catch (error) {
-    console.error('Error guardando estadísticas en MongoDB:', error);
-  }
-}
+const MONGO_SERVICE_URL = process.env.MONGO_SERVICE_URL; 
 
 router.post('/register', async (req, res) => {
   try {
@@ -146,10 +121,8 @@ router.post('/updateUsers', async (req, res) => {
   try {
     const players = req.body.players;
 
-    // Actualizar en MySQL
     for (const player of players) {
       const dbPlayer = await Player.findByPk(player.id);
-
       if (dbPlayer) {
         await dbPlayer.update({
           bombAmount: player.bombAmount,
@@ -161,9 +134,35 @@ router.post('/updateUsers', async (req, res) => {
       }
     }
 
-    // Guardar estadísticas en MongoDB
     if (players.length >= 2) {
-      await saveStatsToMongo(players[0], players[1]);
+      try {
+        // Enviar los datos al microservicio MongoDB
+        const bombesResponse = await fetch(`${MONGO_SERVICE_URL}/bombes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            player1Bombs: parseInt(players[0].bombsUsed) || 0,
+            player2Bombs: parseInt(players[1].bombsUsed) || 0
+          })
+        });
+
+        const enemicsResponse = await fetch(`${MONGO_SERVICE_URL}/enemics`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            player1Enemy: parseInt(players[0].enemiesDefeated) || 0,
+            player2Enemy: parseInt(players[1].enemiesDefeated) || 0
+          })
+        });
+
+        if (!bombesResponse.ok || !enemicsResponse.ok) {
+          throw new Error('Error al guardar estadísticas en MongoDB');
+        }
+
+        console.log('Estadísticas guardadas en MongoDB a través del microservicio');
+      } catch (mongoError) {
+        console.error('Error al enviar datos al microservicio MongoDB:', mongoError);
+      }
     }
 
     return res.json({
@@ -171,6 +170,7 @@ router.post('/updateUsers', async (req, res) => {
       message: "Stats actualitzades correctament"
     });
   } catch (error) {
+    console.error('Error en updateUsers:', error);
     return res.status(500).json({
       success: false,
       message: error.message
