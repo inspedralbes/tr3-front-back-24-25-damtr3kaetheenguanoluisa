@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 3020;
 
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['https://dam.inspedralbes.cat'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -98,7 +98,7 @@ sequelize.sync()
   .then(() => {
     console.log('Base de datos sincronizada.');
     app.listen(PORT, () => {
-      console.log(`Servidor funcionando en http://localhost:${PORT}`);
+      console.log(`Servidor funcionando en http://dam.inspedralbes.cat:${PORT}`);
     });
   })
   .catch(err => console.error('Error sincronizando la base de datos:', err));

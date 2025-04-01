@@ -36,22 +36,20 @@ const enemicsEliminatsSchema = new mongoose.Schema({
 const Bombes = mongoose.model('Bombes', bombesSchema);
 const EnemicsEliminats = mongoose.model('EnemicsEliminats', enemicsEliminatsSchema);
 
-const MONGO_URI = 'mongodb://root:example@tr3-mongo:27017/tr3game?authSource=admin';
+// Configuración de MongoDB
+console.log('Intentando conectar a MongoDB con URI:', process.env.MONGO_URI);
 
-console.log('Intentando conectar a MongoDB en:', MONGO_URI);
-
-mongoose.connect(MONGO_URI, {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-  connectTimeoutMS: 10000,
 })
 .then(() => {
-  console.log('Microservei: Conectat a MongoDB correctament');
+  console.log('Microservei: Conectat a MongoDB Atlas correctament');
 })
 .catch(err => {
-  console.error('Error al conectar a MongoDB:', err);
+  console.error('Error detallado de MongoDB:', err.message);
+  if (err.codeName) {
+    console.error('Código de error:', err.code, 'Nombre del código:', err.codeName);
+  }
   process.exit(1);
 });
 

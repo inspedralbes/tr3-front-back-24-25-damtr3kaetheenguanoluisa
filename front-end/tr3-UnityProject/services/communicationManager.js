@@ -1,4 +1,4 @@
-const URL = 'http://localhost:3020';
+const URL = 'http://dam.inspedralbes.cat:22200';
 
 export async function registerUser(username, email, password) {
   try {
