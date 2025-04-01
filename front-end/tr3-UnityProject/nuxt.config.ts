@@ -2,15 +2,12 @@
 export default defineNuxtConfig({
   ssr: true,
   nitro: {
-    preset: 'node-server',
-    runtimeConfig: {
-      host: 'dam.inspedralbes.cat', 
-      port: 22202 
-    }
+    preset: 'node-server'
   },
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   app: {
-    pageTransition: { name: 'page', mode: 'out-in' }
+    pageTransition: { name: 'page', mode: 'out-in' },
+    baseURL: '/'
   },
   hooks: {
     'pages:extend'(pages) {
@@ -20,6 +17,11 @@ export default defineNuxtConfig({
         path: '/',
         redirect: '/login'
       })
+    }
+  },
+  runtimeConfig: {
+    public: {
+      apiBase: 'https://dam.inspedralbes.cat:22200'
     }
   }
 })
