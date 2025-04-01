@@ -12,7 +12,8 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const app = express();
-const port = process.env.PORT_MONGO;
+// const port = process.env.PORT_MONGO;
+const port = process.env.PORT_PROD_MONGO;
 
 app.use(cors());
 app.use(express.json());
@@ -118,6 +119,47 @@ app.get('/enemics', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.get('/stats', async (req, res) => {
+    try {
+      const bombesStats = await Bombes.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalPlayer1Bombs: { $sum: "$player1Bombs" },
+            totalPlayer2Bombs: { $sum: "$player2Bombs" },
+            avgPlayer1Bombs: { $avg: "$player1Bombs" },
+            avgPlayer2Bombs: { $avg: "$player2Bombs" },
+            maxPlayer1Bombs: { $max: "$player1Bombs" },
+            maxPlayer2Bombs: { $max: "$player2Bombs" },
+          }
+        }
+      ]);
+  
+      const enemicsStats = await EnemicsEliminats.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalPlayer1Enemy: { $sum: "$player1Enemy" },
+            totalPlayer2Enemy: { $sum: "$player2Enemy" },
+            avgPlayer1Enemy: { $avg: "$player1Enemy" },
+            avgPlayer2Enemy: { $avg: "$player2Enemy" },
+            maxPlayer1Enemy: { $max: "$player1Enemy" },
+            maxPlayer2Enemy: { $max: "$player2Enemy" },
+          }
+        }
+      ]);
+  
+      res.json({
+        bombes: bombesStats[0] || {},
+        enemics: enemicsStats[0] || {}
+      });
+    } catch (error) {
+      console.error('Error al obtener estadísticas:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
 
 app.listen(port, () => {
   console.log(`Microservei MongoDB escoltant en el port ${port}`);
