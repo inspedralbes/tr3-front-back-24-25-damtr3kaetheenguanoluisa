@@ -12,21 +12,26 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const app = express();
-// const port = process.env.PORT_MONGO;
-const port = process.env.PORT_PROD_MONGO;
+const port = process.env.PORT_MONGO;
 
 app.use(cors());
 app.use(express.json());
 
 const bombesSchema = new mongoose.Schema({
-  player1Bombs: { type: Number, required: true },
-  player2Bombs: { type: Number, required: true },
-  timestamp: { type: Date, default: Date.now }
+  gameId: { type: String, required: true },
+  player1Name: { type: String, required: true },
+  player2Name: { type: String, required: true },
+  player1Bombs: { type: Number, required: true, default: 0 },
+  player2Bombs: { type: Number, required: true, default: 0 },
+  timestamp: { type: Date, default: Date.now } 
 }, { 
   versionKey: false 
 });
 
 const enemicsEliminatsSchema = new mongoose.Schema({
+  gameId: { type: String, required: true },
+  player1Name: { type: String, required: true },
+  player2Name: { type: String, required: true },
   player1Enemy: { type: Number, required: true, default: 0 },
   player2Enemy: { type: Number, required: true, default: 0 },
   timestamp: { type: Date, default: Date.now }
@@ -37,11 +42,10 @@ const enemicsEliminatsSchema = new mongoose.Schema({
 const Bombes = mongoose.model('Bombes', bombesSchema);
 const EnemicsEliminats = mongoose.model('EnemicsEliminats', enemicsEliminatsSchema);
 
-const MONGO_URI = 'mongodb://root:example@tr3-mongo:27017/tr3game?authSource=admin';
 
-console.log('Intentando conectar a MongoDB en:', MONGO_URI);
+console.log('Intentando conectar a MongoDB en:', process.env.MONGO_URI);
 
-mongoose.connect(MONGO_URI, {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
@@ -60,24 +64,33 @@ app.post('/bombes', async (req, res) => {
   try {
     console.log('Microservei: Rebut petició POST /bombes:', req.body);
     
-    const { player1Bombs, player2Bombs } = req.body;
+    const { gameId, player1Name, player2Name, player1Bombs, player2Bombs } = req.body;
+
+    if (!gameId || !player1Name || !player2Name) {
+      throw new Error('gameId, player1Name y player2Name son obligatoris');
+    }
+
     if (typeof player1Bombs !== 'number' || typeof player2Bombs !== 'number') {
-      throw new Error('player1Bombs y player2Bombs deben ser números');
+      throw new Error('player1Bombs i player2Bombs han ser números');
     }
 
     const bombes = new Bombes({
-      player1Bombs: player1Bombs,
-      player2Bombs: player2Bombs
+      gameId,
+      player1Name,
+      player2Name,
+      player1Bombs,
+      player2Bombs
     });
     
     await bombes.save();
     console.log('Microservei: Bombes guardades correctament:', bombes);
-    res.status(201).json({ message: 'Bombas guardadas', data: bombes });
+    res.status(201).json({ message: 'Bombes guardades', data: bombes });
   } catch (error) {
     console.error('Microservei: Error al guardar bombes:', error);
     res.status(400).json({ error: error.message });
   }
 });
+
 
 app.get('/bombes', async (req, res) => {
   try {
@@ -92,14 +105,22 @@ app.post('/enemics', async (req, res) => {
   try {
     console.log('Microservei: Rebut petició POST /enemics:', req.body);
     
-    const { player1Enemy, player2Enemy } = req.body;
+    const { gameId, player1Name, player2Name, player1Enemy, player2Enemy } = req.body;
+
+    if (!gameId || !player1Name || !player2Name) {
+      throw new Error('gameId, player1Name i player2Name son obligatoris');
+    }
+
     if (typeof player1Enemy !== 'number' || typeof player2Enemy !== 'number') {
-      throw new Error('player1Enemy y player2Enemy deben ser números');
+      throw new Error('player1Enemy y player2Enemy han de ser números');
     }
 
     const enemics = new EnemicsEliminats({
-      player1Enemy: player1Enemy,
-      player2Enemy: player2Enemy
+      gameId,
+      player1Name,
+      player2Name,
+      player1Enemy,
+      player2Enemy
     });
     
     await enemics.save();
@@ -110,6 +131,7 @@ app.post('/enemics', async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
 
 app.get('/enemics', async (req, res) => {
   try {

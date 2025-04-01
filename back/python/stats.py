@@ -1,11 +1,16 @@
-import requests
+import pymongo
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# URL del microservicio MongoDB
-MONGO_STATS_URL = "http://tr3-mongo-express:8081/stats"
-# Obtener datos del backend
-response = requests.get(MONGO_STATS_URL)
+MONGO_URI = "mongodb+srv://a23kaeguapio:Kim0117@cluster0.xt0iw.mongodb.net/bomberman?retryWrites=true&w=majority&appName=Cluster0"
+client = pymongo.MongoClient(MONGO_URI)
+db = client["tr3-Unity"] 
+collection = db["bomberman"] 
+
+import requests
+
+API_ENDPOINT = "http://localhost:3021/stats"
+response = requests.get(API_ENDPOINT)
 
 if response.status_code == 200:
     data = response.json()
@@ -13,7 +18,6 @@ if response.status_code == 200:
     bombes = data["bombes"]
     enemics = data["enemics"]
 
-    # Crear DataFrames para visualizar mejor
     df_bombes = pd.DataFrame([bombes])
     df_enemics = pd.DataFrame([enemics])
 
@@ -23,7 +27,6 @@ if response.status_code == 200:
     print("\n🔥 Estadísticas de Enemigos Eliminados:")
     print(df_enemics)
 
-    # Graficar las estadísticas
     categories = ["Player 1", "Player 2"]
     total_bombs = [bombes["totalPlayer1Bombs"], bombes["totalPlayer2Bombs"]]
     total_enemies = [enemics["totalPlayer1Enemy"], enemics["totalPlayer2Enemy"]]
@@ -43,7 +46,7 @@ if response.status_code == 200:
     plt.ylabel("Enemigos")
 
     plt.tight_layout()
-    plt.savefig("stats.png")  # Guardar el gráfico como imagen
+    plt.savefig("stats.png")
     plt.show()
 
 else:

@@ -5,6 +5,7 @@ import { Player } from '../models/index.js';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -13,7 +14,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const router = express.Router();
 
-const MONGO_SERVICE_URL = process.env.MONGO_SERVICE_URL; 
+const MONGO_SERVICE_URL = "http://localhost:3021"; 
 
 router.post('/register', async (req, res) => {
   try {
@@ -119,63 +120,102 @@ router.get('/:id', async (req, res) => {
 
 router.post('/updateUsers', async (req, res) => {
   try {
-    const players = req.body.players;
+    let { gameId, players } = req.body;
 
-    for (const player of players) {
-      const dbPlayer = await Player.findByPk(player.id);
-      if (dbPlayer) {
-        await dbPlayer.update({
-          bombAmount: player.bombAmount,
-          bombsUsed: player.bombsUsed,
-          speed: player.speed,
-          victories: player.victories,
-          enemiesDefeated: player.enemiesDefeated
-        });
-      }
+    // 🔹 Verificar si players tiene al menos dos jugadores
+    if (!Array.isArray(players) || players.length < 2) {
+        console.error("❌ Error: Se requieren al menos 2 jugadores.");
+        return res.status(400).json({ success: false, message: "Se requieren al menos 2 jugadores." });
     }
 
-    if (players.length >= 2) {
-      try {
-        // Enviar los datos al microservicio MongoDB
-        const bombesResponse = await fetch(`${MONGO_SERVICE_URL}/bombes`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            player1Bombs: parseInt(players[0].bombsUsed) || 0,
-            player2Bombs: parseInt(players[1].bombsUsed) || 0
-          })
-        });
+    // 🔹 Asegurarse que gameId esté definido
+    if (!gameId) {
+        gameId = uuidv4();
+        console.log(`✅ Nuevo gameId generado: ${gameId}`);
+    }
 
-        const enemicsResponse = await fetch(`${MONGO_SERVICE_URL}/enemics`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            player1Enemy: parseInt(players[0].enemiesDefeated) || 0,
-            player2Enemy: parseInt(players[1].enemiesDefeated) || 0
-          })
-        });
+    // 🔹 Extraer jugadores de manera segura
+    const player1 = players[0] || {};
+    const player2 = players[1] || {};
+
+    // 🔹 Log para verificar cómo se ven los datos de los jugadores
+    console.log("Jugadores recibidos:", players);
+    console.log("Jugador 1:", player1);
+    console.log("Jugador 2:", player2);
+
+    const player1Name = player1.username?.trim() || null;
+    const player2Name = player2.username?.trim() || null;
+
+    // 🔹 Verificar si los nombres de los jugadores son válidos
+    if (!player1Name || !player2Name) {
+        console.error("❌ Error: Ambos jugadores deben tener un nombre válido.");
+        return res.status(400).json({ success: false, message: "Ambos jugadores deben tener un nombre válido." });
+    }
+
+    console.log(`👤 Jugador 1: ${player1Name}, Jugador 2: ${player2Name}`);
+
+    // 🔹 Actualizar jugadores en la base de datos SQL
+    for (const player of players) {
+        const dbPlayer = await Player.findByPk(player.id);
+        if (dbPlayer) {
+            await dbPlayer.update({
+                bombAmount: player.bombAmount ?? 0,
+                bombsUsed: player.bombsUsed ?? 0,
+                speed: player.speed ?? 0,
+                victories: player.victories ?? 0,
+                enemiesDefeated: player.enemiesDefeated ?? 0
+            });
+        }
+    }
+
+    // 🔹 Enviar estadísticas a MongoDB
+    try {
+        const [bombesResponse, enemicsResponse] = await Promise.all([
+            fetch(`${MONGO_SERVICE_URL}/bombes`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    gameId,
+                    player1Name,
+                    player2Name,
+                    player1Bombs: parseInt(player1.bombsUsed) || 0,
+                    player2Bombs: parseInt(player2.bombsUsed) || 0
+                })
+            }),
+            fetch(`${MONGO_SERVICE_URL}/enemics`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    gameId,
+                    player1Name,
+                    player2Name,
+                    player1Enemy: parseInt(player1.enemiesDefeated) || 0,
+                    player2Enemy: parseInt(player2.enemiesDefeated) || 0
+                })
+            })
+        ]);
 
         if (!bombesResponse.ok || !enemicsResponse.ok) {
-          throw new Error('Error al guardar estadísticas en MongoDB');
+            throw new Error('Error al guardar estadísticas en MongoDB');
         }
 
-        console.log('Estadísticas guardadas en MongoDB a través del microservicio');
-      } catch (mongoError) {
-        console.error('Error al enviar datos al microservicio MongoDB:', mongoError);
-      }
+        console.log('✅ Estadísticas guardadas correctamente en MongoDB');
+    } catch (mongoError) {
+        console.error('❌ Error al enviar datos al microservicio MongoDB:', mongoError);
     }
 
     return res.json({
-      success: true,
-      message: "Stats actualitzades correctament"
+        success: true,
+        message: "✅ Stats actualizadas correctamente"
     });
-  } catch (error) {
-    console.error('Error en updateUsers:', error);
+
+} catch (error) {
+    console.error('❌ Error en updateUsers:', error);
     return res.status(500).json({
-      success: false,
-      message: error.message
+        success: false,
+        message: error.message
     });
-  }
+}
 });
 
 router.put('/:id', async (req, res) => {
