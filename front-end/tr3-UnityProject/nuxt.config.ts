@@ -2,9 +2,11 @@
 export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
   devtools: { enabled: true },
+
   app: {
     pageTransition: { name: 'page', mode: 'out-in' }
   },
+
   hooks: {
     'pages:extend'(pages) {
       // Hacer que /login sea la página por defecto
@@ -14,5 +16,7 @@ export default defineNuxtConfig({
         redirect: '/login'
       })
     }
-  }
+  },
+
+  compatibilityDate: '2025-04-02'
 })

@@ -96,7 +96,7 @@
 import { ref, onMounted } from 'vue'
 import { getPlayers, deletePlayer, updatePlayer } from '@/services/communicationManager'
 
-const players = ref([])
+const players = ref([]);
 
 
 async function allPlayers() {
