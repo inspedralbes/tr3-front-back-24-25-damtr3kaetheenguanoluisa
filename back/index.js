@@ -18,6 +18,8 @@ dotenv.config({ path: path.resolve(__dirname, './.env') });
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 3020;
+// const PORT_PROD = process.env.PORT_PROD 
+
 
 app.use(express.json());
 app.use(cors({

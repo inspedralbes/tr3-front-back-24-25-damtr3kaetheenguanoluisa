@@ -88,6 +88,19 @@ services:
       - tr3-mysql
     networks:
       - tr3-network
+  tr3-stats:
+    build:
+      context: .
+      dockerfile: ./back/python/Dockerfile
+    volumes:
+      - ./back/python:/usr/src/app
+    working_dir: /usr/src/app
+    command: python stats.py
+    depends_on:
+      - tr3-mongo
+    networks:
+      - tr3-network
+
 
 volumes:
   mysql-bd:
