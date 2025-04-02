@@ -1,4 +1,5 @@
-const URL = 'http://dam.inspedralbes.cat:22200';
+// const URL = 'http://dam.inspedralbes.cat:22200';
+const URL = 'http://localhost:3020';
 const URL_STATS = 'http://localhost:3021';
 
 
@@ -128,6 +129,8 @@ export async function deletePlayer(id) {
   }
 }
 export async function updatePlayer(id, updatedPlayerData) {
+  console.log("ID recibido:", id);
+  console.log("Datos enviados:", updatedPlayerData);
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No token found. Please log in.');
 

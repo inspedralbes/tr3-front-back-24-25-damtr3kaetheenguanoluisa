@@ -1,6 +1,5 @@
 import express from 'express';
 import path from 'path';
-import path from 'path';
 import bcrypt from 'bcryptjs';
 import { Player } from '../models/index.js';
 import dotenv from 'dotenv';
@@ -123,23 +122,19 @@ router.post('/updateUsers', async (req, res) => {
   try {
     let { gameId, players } = req.body;
 
-    // 🔹 Verificar si players tiene al menos dos jugadores
     if (!Array.isArray(players) || players.length < 2) {
         console.error("❌ Error: Se requieren al menos 2 jugadores.");
         return res.status(400).json({ success: false, message: "Se requieren al menos 2 jugadores." });
     }
 
-    // 🔹 Asegurarse que gameId esté definido
     if (!gameId) {
         gameId = uuidv4();
         console.log(`✅ Nuevo gameId generado: ${gameId}`);
     }
 
-    // 🔹 Extraer jugadores de manera segura
     const player1 = players[0] || {};
     const player2 = players[1] || {};
 
-    // 🔹 Log para verificar cómo se ven los datos de los jugadores
     console.log("Jugadores recibidos:", players);
     console.log("Jugador 1:", player1);
     console.log("Jugador 2:", player2);
@@ -147,15 +142,13 @@ router.post('/updateUsers', async (req, res) => {
     const player1Name = player1.username?.trim() || null;
     const player2Name = player2.username?.trim() || null;
 
-    // 🔹 Verificar si los nombres de los jugadores son válidos
     if (!player1Name || !player2Name) {
         console.error("❌ Error: Ambos jugadores deben tener un nombre válido.");
         return res.status(400).json({ success: false, message: "Ambos jugadores deben tener un nombre válido." });
     }
 
-    console.log(`👤 Jugador 1: ${player1Name}, Jugador 2: ${player2Name}`);
+    console.log(`Jugador 1: ${player1Name}, Jugador 2: ${player2Name}`);
 
-    // 🔹 Actualizar jugadores en la base de datos SQL
     for (const player of players) {
         const dbPlayer = await Player.findByPk(player.id);
         if (dbPlayer) {
@@ -169,7 +162,6 @@ router.post('/updateUsers', async (req, res) => {
         }
     }
 
-    // 🔹 Enviar estadísticas a MongoDB
     try {
         const [bombesResponse, enemicsResponse] = await Promise.all([
             fetch(`${MONGO_SERVICE_URL}/bombes`, {
