@@ -1,11 +1,17 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
-  devtools: { enabled: true },
+  ssr: true,
+  nitro: {
+    preset: 'node-server'
+  },
+  devtools: { enabled: false },
 
   app: {
-    pageTransition: { name: 'page', mode: 'out-in' }
+    pageTransition: { name: 'page', mode: 'out-in' },
+    baseURL: '/'
   },
+
 
   hooks: {
     'pages:extend'(pages) {

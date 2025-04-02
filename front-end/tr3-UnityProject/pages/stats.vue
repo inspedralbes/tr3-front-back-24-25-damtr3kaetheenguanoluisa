@@ -37,11 +37,89 @@
         <h1>Estadístiques</h1>
       </header>
 
+      <div class="stats-container">
+        <div v-if="stats">
+          <h2>Dades Estadístiques</h2>
+          <pre>{{ stats }}</pre>
+        </div>
+        <p v-else>Cargando estadísticas...</p>
+
+        <div class="image-container" v-if="imageUrl">
+          <h2>Gráfica de Estadísticas</h2>
+          <img :src="imageUrl" alt="Gráfica de estadísticas" />
+        </div>
+
+        <button @click="generateImage">Generar Imagen</button>
+      </div>
     </main>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+
+const servers = ["http://localhost:3021/stats"];
+const currentServer = ref(servers[0]);
+const stats = ref(null);
+const imageUrl = ref(''); 
+let intervalId = null;
+
+const fetchStats = async () => {
+  try {
+    const response = await fetch(currentServer.value, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al obtener estadísticas');
+    }
+
+    stats.value = await response.json();
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+  }
+};
+
+const generateImage = async () => {
+  try {
+    const response = await fetch('http://localhost:3021/stats/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al generar la imagen');
+    }
+
+    imageUrl.value = 'http://localhost:3021/stats-image';
+  } catch (error) {
+    console.error('Error al generar la imagen:', error);
+  }
+};
+
+
+// const startImageCheck = () => {
+//   intervalId = setInterval(async () => {
+//     const imageResponse = await fetch('http://localhost:3021/stats/stats.png');
+
+//     if (imageResponse.ok) {
+//       imageUrl.value = 'http://localhost:3021/stats/stats.png'; 
+//       clearInterval(intervalId); 
+//     }
+//   }, 2000); 
+
+//   setTimeout(() => {
+//     clearInterval(intervalId);
+//     alert("La imagen no se generó a tiempo.");
+//   }, 20000); 
+// };
+
+onMounted(fetchStats);
 </script>
 
 <style scoped>
@@ -196,5 +274,11 @@
   color: #2980b9;
   font-weight: bold;
   font-size: 1rem;
+}
+
+.stats-container {
+  background: #ecf0f1;
+  padding: 20px;
+  border-radius: 10px;
 }
 </style>
