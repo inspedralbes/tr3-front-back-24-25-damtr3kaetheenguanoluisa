@@ -3,8 +3,11 @@ import cors from 'cors';
 import path from 'path';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import fs from  'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { exec } from 'child_process';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -142,18 +145,20 @@ app.get('/enemics', async (req, res) => {
   }
 });
 
+
+
 app.get('/stats', async (req, res) => {
     try {
       const bombesStats = await Bombes.aggregate([
         {
           $group: {
-            _id: null,
-            totalPlayer1Bombs: { $sum: "$player1Bombs" },
-            totalPlayer2Bombs: { $sum: "$player2Bombs" },
-            avgPlayer1Bombs: { $avg: "$player1Bombs" },
-            avgPlayer2Bombs: { $avg: "$player2Bombs" },
-            maxPlayer1Bombs: { $max: "$player1Bombs" },
-            maxPlayer2Bombs: { $max: "$player2Bombs" },
+        _id: "$gameId",
+        totalPlayer1Bombs: { $sum: "$player1Bombs" },
+        totalPlayer2Bombs: { $sum: "$player2Bombs" },
+        avgPlayer1Bombs: { $avg: "$player1Bombs" },
+        avgPlayer2Bombs: { $avg: "$player2Bombs" },
+        maxPlayer1Bombs: { $max: "$player1Bombs" },
+        maxPlayer2Bombs: { $max: "$player2Bombs" },
           }
         }
       ]);
@@ -161,7 +166,7 @@ app.get('/stats', async (req, res) => {
       const enemicsStats = await EnemicsEliminats.aggregate([
         {
           $group: {
-            _id: null,
+            _id: "$gameId" ,
             totalPlayer1Enemy: { $sum: "$player1Enemy" },
             totalPlayer2Enemy: { $sum: "$player2Enemy" },
             avgPlayer1Enemy: { $avg: "$player1Enemy" },
@@ -181,7 +186,41 @@ app.get('/stats', async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
-  
+
+  app.use('/stats-image', express.static(path.join(__dirname, '../../python')));
+
+
+  app.get('/stats-image', (req, res) => {
+     const imagePath = path.join(__dirname, '../../python/stats.png');
+     
+     fs.access(imagePath, fs.constants.F_OK, (err) => {
+       if (err) {
+         return res.status(404).json({ error: 'No s\'ha trobat la imatge de les estadístiques.' });
+       }
+   
+       res.sendFile(imagePath);
+     });
+    });
+
+app.post('/stats/generate', (req, res) => {
+  const pythonScriptPath = path.join(__dirname, '../../python/stats.py'); 
+
+  exec(`python ${pythonScriptPath}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error al ejecutar el script: ${error.message}`);
+      return res.status(500).json({ error: 'Error al generar imatge' });
+    }
+
+    if (stderr) {
+      console.error(`Error en el script: ${stderr}`);
+      return res.status(500).json({ error: 'Error al generar  imatge' });
+    }
+
+    console.log(`Salida del script: ${stdout}`);
+    res.status(200).json({ message: 'Imatge generada correctament' });
+  });
+});
+   
 
 app.listen(port, () => {
   console.log(`Microservei MongoDB escoltant en el port ${port}`);

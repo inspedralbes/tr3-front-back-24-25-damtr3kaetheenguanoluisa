@@ -1,4 +1,6 @@
 const URL = 'http://localhost:3020';
+const URL_STATS = 'http://localhost:3021';
+
 
 export async function registerUser(username, email, password) {
   try {
@@ -61,7 +63,7 @@ export async function getStats() {
   }
 
   try {
-    const response = await fetch(`${URL}/stats`, {
+    const response = await fetch(`${URL_STATS}/stats`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`, 

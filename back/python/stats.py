@@ -1,11 +1,14 @@
 import pymongo
 import pandas as pd
 import matplotlib.pyplot as plt
+import os 
+
+image_save_path = os.path.join(os.path.dirname(__file__), 'stats.png')
 
 MONGO_URI = "mongodb+srv://a23kaeguapio:Kim0117@cluster0.xt0iw.mongodb.net/bomberman?retryWrites=true&w=majority&appName=Cluster0"
 client = pymongo.MongoClient(MONGO_URI)
 db = client["tr3-Unity"] 
-collection = db["bomberman"] 
+collection = db["bomberman"]
 
 import requests
 
@@ -21,10 +24,10 @@ if response.status_code == 200:
     df_bombes = pd.DataFrame([bombes])
     df_enemics = pd.DataFrame([enemics])
 
-    print("📊 Estadísticas de Bombas Lanzadas:")
+    print("Estadístiques de bombes llençades:")
     print(df_bombes)
     
-    print("\n🔥 Estadísticas de Enemigos Eliminados:")
+    print("\n Estadístiques d'enemics eliminats:")
     print(df_enemics)
 
     categories = ["Player 1", "Player 2"]
@@ -35,19 +38,20 @@ if response.status_code == 200:
 
     plt.subplot(1, 2, 1)
     plt.bar(categories, total_bombs, color=['blue', 'red'])
-    plt.title("Total de Bombas Lanzadas")
+    plt.title("Total bombes utilitzades")
     plt.xlabel("Jugador")
-    plt.ylabel("Bombas")
+    plt.ylabel("Bombes")
 
     plt.subplot(1, 2, 2)
     plt.bar(categories, total_enemies, color=['green', 'purple'])
-    plt.title("Total de Enemigos Eliminados")
+    plt.title("Total enemics eliminats")
     plt.xlabel("Jugador")
-    plt.ylabel("Enemigos")
+    plt.ylabel("Enemics")
 
     plt.tight_layout()
-    plt.savefig("stats.png")
+
+    plt.savefig(image_save_path)
     plt.show()
 
 else:
-    print("❌ Error al obtener estadísticas:", response.status_code)
+    print("Error al obtenir estadístiques:", response.status_code)
