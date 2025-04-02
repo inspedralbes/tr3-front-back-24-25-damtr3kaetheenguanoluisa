@@ -196,7 +196,6 @@ html, body {
   right: 10%;
   width: 120px;
   height: 120px;
-  background-image: url('/api/placeholder/120/120');
   background-size: contain;
   background-repeat: no-repeat;
   z-index: 1;
