@@ -1,6 +1,6 @@
-// const URL = 'http://dam.inspedralbes.cat:22200';
-const URL = 'http://localhost:3020';
-const URL_STATS = 'http://localhost:3021';
+const URL = 'http://dam.inspedralbes.cat:22200';
+// const URL = 'http://localhost:3020';
+const URL_STATS = 'http://dam.inspedralbes.cat:22201';
 
 
 export async function registerUser(username, email, password) {

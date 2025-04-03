@@ -119,7 +119,7 @@
 
           <div class="graph-section">
             <div class="image-container" v-if="imageUrl">
-              <h2>Gráfica de Estadísticas</h2>
+              <h2>Gráfica d'estadístiques</h2>
               <img :src="imageUrl" alt="Gráfica de estadísticas" class="stats-image" />
             </div>
             <button @click="generateImage" class="generate-button">
@@ -132,7 +132,7 @@
             </button>
           </div>
         </div>
-        <p v-else class="loading">Cargando estadísticas...</p>
+        <p v-else class="loading">Carregant estadístiques...</p>
       </div>
     </main>
   </div>
