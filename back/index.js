@@ -25,8 +25,8 @@ let isShuttingDown = false;
 
 app.use(express.json());
 app.use(cors({
-  // origin: ['https://dam.inspedralbes.cat'],
-  origin: ['http://localhost:3000'],
+  origin: ['http://bomberman.dam.inspedralbes.cat:22212'],
+  // origin: ['http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']

@@ -141,7 +141,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
-const servers = ["http://localhost:3021/stats"];
+const servers = ["http://dam.inspedralbes.cat:22201/stats"];
 const currentServer = ref(servers[0]);
 const stats = ref(null);
 const imageUrl = ref('');
@@ -169,7 +169,7 @@ const fetchStats = async () => {
 
 const generateImage = async () => {
   try {
-    const response = await fetch('http://localhost:3021/stats/generate', {
+    const response = await fetch('http://dam.inspedralbes.cat:22201/stats/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -180,7 +180,7 @@ const generateImage = async () => {
       throw new Error('Error al generar la imagen');
     }
 
-    imageUrl.value = 'http://localhost:3021/stats-image';
+    imageUrl.value = 'http://dam.inspedralbes.cat:22201/stats-image';
   } catch (error) {
     console.error('Error al generar la imagen:', error);
   }

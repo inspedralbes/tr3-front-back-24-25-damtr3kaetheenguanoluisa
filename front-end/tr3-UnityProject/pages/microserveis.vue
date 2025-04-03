@@ -101,7 +101,7 @@ const formatDate = (timestamp) => {
 
 const fetchLogs = async () => {
   try {
-    const response = await fetch('http://localhost:3020/logs?service=MongoDB');
+    const response = await fetch('http://dam.inspedralbes.cat:22200/logs?service=MongoDB');
     const newLogs = await response.json();
     logs.value = newLogs.reverse(); 
     
@@ -117,7 +117,7 @@ const fetchLogs = async () => {
 
 const toggleMongoService = async () => {
   try {
-    const response = await fetch('http://localhost:3020/mongo-service', {
+    const response = await fetch('http://dam.inspedralbes.cat:22200/mongo-service', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -460,7 +460,6 @@ onUnmounted(() => {
   height: 24px;
 }
 
-/* Estilos para los botones de acción */
 .player-card-actions {
   padding: 15px;
   border-top: 1px solid #e9ecef;
@@ -575,7 +574,7 @@ onUnmounted(() => {
   border-radius: 4px;
   padding: 10px;
   height: 500px;
-  width: 1500px; 
+  width: 1000px; 
   overflow-y: auto;
   font-family: monospace;
   margin: 0 auto;

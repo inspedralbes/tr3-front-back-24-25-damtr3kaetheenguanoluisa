@@ -261,7 +261,7 @@ app.get('/stats-image', (req, res) => {
 app.post('/stats/generate', (req, res) => {
   const pythonScriptPath = path.join(__dirname, '../../python/stats.py'); 
 
-  exec(`python ${pythonScriptPath}`, (error, stdout, stderr) => {
+  exec(`python3 ${pythonScriptPath}`, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error al ejecutar el script: ${error.message}`);
       return res.status(500).json({ error: 'Error al generar imatge' });

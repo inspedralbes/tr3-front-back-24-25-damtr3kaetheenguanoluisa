@@ -11,47 +11,52 @@ client = pymongo.MongoClient(MONGO_URI)
 db = client["tr3-Unity"]
 collection = db["bomberman"]
 
-API_ENDPOINT = "http://localhost:3021/stats"
-response = requests.get(API_ENDPOINT)
+API_ENDPOINT = "https://dam.inspedralbes.cat:22201/stats"
 
-if response.status_code == 200:
-    data = response.json()
-    
-    bombes = data["bombes"]
-    enemics = data["enemics"]
-    players = data["players"] 
+try:
+    response = requests.get(API_ENDPOINT)
+    response.raise_for_status()  
 
-    df_bombes = pd.DataFrame([bombes])
-    df_enemics = pd.DataFrame([enemics])
+    if response.status_code == 200:
+        data = response.json()
+        
+        bombes = data["bombes"]
+        enemics = data["enemics"]
+        players = data["players"] 
 
-    print("Estadístiques de bombes llençades:")
-    print(df_bombes)
-    
-    print("\nEstadístiques d'enemics eliminats:")
-    print(df_enemics)
+        df_bombes = pd.DataFrame([bombes])
+        df_enemics = pd.DataFrame([enemics])
 
-    categories = [players["player1"], players["player2"]]
-    total_bombs = [bombes["totalPlayer1Bombs"], bombes["totalPlayer2Bombs"]]
-    total_enemies = [enemics["totalPlayer1Enemy"], enemics["totalPlayer2Enemy"]]
+        print("Estadístiques de bombes llençades:")
+        print(df_bombes)
+        
+        print("\nEstadístiques d'enemics eliminats:")
+        print(df_enemics)
 
-    plt.figure(figsize=(10, 5))
+        categories = [players["player1"], players["player2"]]
+        total_bombs = [bombes["totalPlayer1Bombs"], bombes["totalPlayer2Bombs"]]
+        total_enemies = [enemics["totalPlayer1Enemy"], enemics["totalPlayer2Enemy"]]
 
-    plt.subplot(1, 2, 1)
-    plt.bar(categories, total_bombs, color=['blue', 'red'])
-    plt.title("Total bombes utilitzades")
-    plt.xlabel("Jugador")
-    plt.ylabel("Bombes")
+        plt.figure(figsize=(10, 5))
 
-    plt.subplot(1, 2, 2)
-    plt.bar(categories, total_enemies, color=['green', 'purple'])
-    plt.title("Total enemics eliminats")
-    plt.xlabel("Jugador")
-    plt.ylabel("Enemics")
+        plt.subplot(1, 2, 1)
+        plt.bar(categories, total_bombs, color=['blue', 'red'])
+        plt.title("Total bombes utilitzades")
+        plt.xlabel("Jugador")
+        plt.ylabel("Bombes")
 
-    plt.tight_layout()
-    plt.savefig(image_save_path)
+        plt.subplot(1, 2, 2)
+        plt.bar(categories, total_enemies, color=['green', 'purple'])
+        plt.title("Total enemics eliminats")
+        plt.xlabel("Jugador")
+        plt.ylabel("Enemics")
 
-    print(f"Gràfics guardats a: {image_save_path}")
+        plt.tight_layout()
+        plt.savefig(image_save_path)
 
-else:
-    print("Error al obtenir estadístiques:", response.status_code)
+        print(f"Gràfics guardats a: {image_save_path}")
+
+except requests.exceptions.RequestException as e:
+    print(f"Error connecting to the stats API: {str(e)}")
+    print(f"Attempted to connect to: {API_ENDPOINT}")
+    raise 

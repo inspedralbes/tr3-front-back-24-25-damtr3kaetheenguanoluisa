@@ -306,8 +306,8 @@ html, body {
 }
 
 .register-card {
-  height: 700px;
-  width: 700px;
+  height: 600px;
+  width: 600px;
   background-color: #14204e;
   border-radius: 20px;
   overflow: hidden;
