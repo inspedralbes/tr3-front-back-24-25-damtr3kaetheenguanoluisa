@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import fs from  'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -214,7 +214,7 @@ app.get('/stats', async (req, res) => {
     const enemicsStats = await EnemicsEliminats.aggregate([
       {
         $group: {
-          _id: "$gameId" ,
+          _id: "$gameId",
           totalPlayer1Enemy: { $sum: "$player1Enemy" },
           totalPlayer2Enemy: { $sum: "$player2Enemy" },
           avgPlayer1Enemy: { $avg: "$player1Enemy" },
@@ -225,7 +225,16 @@ app.get('/stats', async (req, res) => {
       }
     ]);
 
+    const gameId = bombesStats[0]?._id || enemicsStats[0]?._id; 
+    const gameData = await Bombes.findOne({ gameId }) || await EnemicsEliminats.findOne({ gameId });
+
+    const players = {
+      player1: gameData?.player1Name || 'Jugador 1',
+      player2: gameData?.player2Name || 'Jugador 2',
+    };
+
     res.json({
+      players,
       bombes: bombesStats[0] || {},
       enemics: enemicsStats[0] || {}
     });

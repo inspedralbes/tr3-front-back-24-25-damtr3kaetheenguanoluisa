@@ -3,17 +3,19 @@
     <nav class="sidebar">
       <div class="sidebar-content">
         <div class="sidebar-header">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="logo-icon">
-            <circle cx="12" cy="12" r="10"/>
-            <circle cx="12" cy="10" r="3"/>
-            <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            class="logo-icon">
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="10" r="3" />
+            <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662" />
           </svg>
           <h2 class="sidebar-title">Admin Bomberman</h2>
         </div>
         <ul class="nav-menu">
           <li>
             <NuxtLink to="/players" class="nav-link">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" class="nav-icon">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                 <circle cx="9" cy="7" r="4"></circle>
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -24,7 +26,8 @@
           </li>
           <li>
             <NuxtLink to="/stats" class="nav-link">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" class="nav-icon">
                 <path d="M18 20V10"></path>
                 <path d="M12 20V4"></path>
                 <path d="M6 20v-6"></path>
@@ -34,7 +37,8 @@
           </li>
           <li>
             <NuxtLink to="/microserveis" class="nav-link">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" class="nav-icon">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
               </svg>
@@ -46,7 +50,8 @@
       <div class="sidebar-footer">
         <div class="user-info">
           <div class="user-avatar">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
@@ -62,18 +67,72 @@
       </header>
 
       <div class="stats-container">
-        <div v-if="stats">
-          <h2>Dades Estadístiques</h2>
-          <pre>{{ stats }}</pre>
-        </div>
-        <p v-else>Cargando estadísticas...</p>
+       
+        <div v-if="stats" class="stats-dashboard">
+          <div class="stats-cards">
+            <div class="stats-card bombs">
+              <div class="card-header">
+                <svg xmlns="http://www.w3.org/2000/svg" class="card-icon" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <h3>Bombes Utilitzades</h3>
+              </div>
+              <div class="card-content">
+                <div class="player-stat">
+                  <span class="stat-value">
+                    {{ stats.players?.player1 }}: {{ stats.bombes.totalPlayer1Bombs }}
+                  </span>
+                </div>
+                <div class="player-stat">
+                  <span class="stat-value">
+                    {{ stats.players?.player2 }}: {{ stats.bombes.totalPlayer2Bombs }}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-        <div class="image-container" v-if="imageUrl">
-          <h2>Gráfica de Estadísticas</h2>
-          <img :src="imageUrl" alt="Gráfica de estadísticas" />
-        </div>
+            <div class="stats-card enemies">
+              <div class="card-header">
+                <svg xmlns="http://www.w3.org/2000/svg" class="card-icon" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+                <h3>Enemics Eliminats</h3>
+              </div>
+              <div class="card-content">
 
-        <button @click="generateImage">Generar Imagen</button>
+                <div class="player-stat">
+                  <span class="stat-value">
+                    {{ stats.players?.player1 }}: {{ stats.enemics.totalPlayer1Enemy }}
+                  </span>
+                </div>
+                <div class="player-stat">
+                  <span class="stat-value">
+                    {{ stats.players?.player2 }}: {{ stats.enemics.totalPlayer2Enemy }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="graph-section">
+            <div class="image-container" v-if="imageUrl">
+              <h2>Gráfica de Estadísticas</h2>
+              <img :src="imageUrl" alt="Gráfica de estadísticas" class="stats-image" />
+            </div>
+            <button @click="generateImage" class="generate-button">
+              <svg xmlns="http://www.w3.org/2000/svg" class="button-icon" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+              Generar Gráfica
+            </button>
+          </div>
+        </div>
+        <p v-else class="loading">Cargando estadísticas...</p>
       </div>
     </main>
   </div>
@@ -85,7 +144,7 @@ import { ref, onMounted } from 'vue';
 const servers = ["http://localhost:3021/stats"];
 const currentServer = ref(servers[0]);
 const stats = ref(null);
-const imageUrl = ref(''); 
+const imageUrl = ref('');
 let intervalId = null;
 
 const fetchStats = async () => {
@@ -102,6 +161,7 @@ const fetchStats = async () => {
     }
 
     stats.value = await response.json();
+    console.log("Datos recibidos:", stats.value);
   } catch (error) {
     console.error("Error fetching stats:", error);
   }
@@ -278,256 +338,183 @@ onMounted(fetchStats);
   font-weight: 600;
 }
 
-/* Estilo de las tarjetas de jugadores */
-.players-grid {
+.stats-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.game-selector {
+  margin-bottom: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.game-selector h2 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.game-select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #e0e6ed;
+  border-radius: 8px;
+  background-color: white;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.game-select:hover {
+  border-color: #3498db;
+}
+
+.game-select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.stats-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.stats-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
 }
 
-.player-card {
-  background-color: white;
+.stats-card {
+  background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
-.player-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+.stats-card:hover {
+  transform: translateY(-5px);
 }
 
-.player-card-header {
+.stats-card.bombs {
+  border-top: 4px solid #3498db;
+}
+
+.stats-card.enemies {
+  border-top: 4px solid #e74c3c;
+}
+
+.card-header {
+  padding: 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e0e6ed;
   display: flex;
   align-items: center;
-  background: linear-gradient(to right, #f1f4f8, #e6eef7);
-  padding: 18px;
-  border-bottom: 1px solid #e9ecef;
+  gap: 15px;
 }
 
-.player-avatar {
-  width: 50px;
-  height: 50px;
-  background-color: #3498db;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+.card-icon {
+  width: 24px;
+  height: 24px;
+  color: #3498db;
 }
 
-.player-avatar svg {
-  width: 30px;
-  height: 30px;
-  fill: white;
+.stats-card.enemies .card-icon {
+  color: #e74c3c;
 }
 
-.player-name {
-  font-size: 1.3rem;
-  color: #2c3e50;
+.card-header h3 {
   margin: 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
   font-weight: 600;
 }
 
-.player-stats {
-  padding: 18px;
+.card-content {
+  padding: 20px;
 }
 
-.stat-group {
+.player-stat {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
   align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e6ed;
 }
 
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-grow: 1;
-  text-align: center;
-  width: 100%;
+.player-stat:last-child {
+  border-bottom: none;
 }
 
-.stat-label {
-  color: #7f8c8d;
-  font-size: 0.9rem;
-  margin-bottom: 8px;
+.player-name {
+  color: #2c3e50;
   font-weight: 500;
 }
 
 .stat-value {
-  color: #2980b9;
-  font-weight: bold;
-  font-size: 1.45rem;
-}
-
-.slider-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.slider {
-  width: 100%;
-  height: 8px;
-  border-radius: 4px;
-  background: #dfe6e9;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-  margin: 10px 0;
-}
-
-.slider:hover {
-  opacity: 1;
-}
-
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #3498db;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s ease;
-}
-
-.slider::-webkit-slider-thumb:hover {
-  background: #2980b9;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
-  transform: scale(1.1);
-}
-
-.slider::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #3498db;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s ease;
-  border: none;
-}
-
-.slider::-moz-range-thumb:hover {
-  background: #2980b9;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
-  transform: scale(1.1);
-}
-
-.slider-value {
-  font-size: 1.2rem;
-  color: #3498db;
-  font-weight: bold;
-  margin-top: 5px;
-  background-color: #f1f4f8;
-  padding: 4px 12px;
-  border-radius: 12px;
-  min-width: 30px;
-  text-align: center;
-}
-
-.input-container {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.number-input {
-  width: 80px;
-  padding: 8px 12px;
-  border: 2px solid #e0e6ed;
-  border-radius: 8px;
-  font-size: 1rem;
-  text-align: center;
-  transition: all 0.3s ease;
-  color: #3498db;
+  font-size: 1.5rem;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  color: #3498db;
 }
 
-.number-input:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-  outline: none;
+.stats-card.enemies .stat-value {
+  color: #e74c3c;
 }
 
-.number-input::-webkit-inner-spin-button,
-.number-input::-webkit-outer-spin-button {
-  opacity: 1;
-  height: 24px;
+.graph-section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilos para los botones de acción */
-.player-card-actions {
-  padding: 15px;
-  border-top: 1px solid #e9ecef;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
+.stats-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 20px 0;
 }
 
-.edit-button,
-.save-button,
-.delete-button {
+.generate-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 15px;
+  gap: 10px;
+  background: #2ecc71;
+  color: white;
+  border: none;
+  padding: 12px 24px;
   border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: none;
-  font-weight: 500;
-  gap: 8px;
-  min-width: 100px;
+  width: 100%;
 }
 
-.edit-button {
-  background-color: #3498db;
-  color: white;
-}
-
-.edit-button:hover {
-  background-color: #2980b9;
+.generate-button:hover {
+  background: #27ae60;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
 }
 
-.save-button {
-  background-color: #2ecc71;
-  color: white;
+.button-icon {
+  width: 20px;
+  height: 20px;
 }
 
-.save-button:hover {
-  background-color: #27ae60;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.delete-button {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.delete-button:hover {
-  background-color: #c0392b;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.edit-button svg,
-.save-button svg,
-.delete-button svg {
-  width: 18px;
-  height: 18px;
-  stroke: currentColor;
+.loading {
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  padding: 20px;
 }
 </style>

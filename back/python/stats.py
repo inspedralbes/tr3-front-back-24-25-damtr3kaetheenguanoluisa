@@ -1,16 +1,15 @@
 import pymongo
 import pandas as pd
 import matplotlib.pyplot as plt
-import os 
+import os
+import requests
 
 image_save_path = os.path.join(os.path.dirname(__file__), 'stats.png')
 
 MONGO_URI = "mongodb+srv://a23kaeguapio:Kim0117@cluster0.xt0iw.mongodb.net/bomberman?retryWrites=true&w=majority&appName=Cluster0"
 client = pymongo.MongoClient(MONGO_URI)
-db = client["tr3-Unity"] 
+db = client["tr3-Unity"]
 collection = db["bomberman"]
-
-import requests
 
 API_ENDPOINT = "http://localhost:3021/stats"
 response = requests.get(API_ENDPOINT)
@@ -20,6 +19,7 @@ if response.status_code == 200:
     
     bombes = data["bombes"]
     enemics = data["enemics"]
+    players = data["players"] 
 
     df_bombes = pd.DataFrame([bombes])
     df_enemics = pd.DataFrame([enemics])
@@ -27,10 +27,10 @@ if response.status_code == 200:
     print("Estadístiques de bombes llençades:")
     print(df_bombes)
     
-    print("\n Estadístiques d'enemics eliminats:")
+    print("\nEstadístiques d'enemics eliminats:")
     print(df_enemics)
 
-    categories = ["Player 1", "Player 2"]
+    categories = [players["player1"], players["player2"]]
     total_bombs = [bombes["totalPlayer1Bombs"], bombes["totalPlayer2Bombs"]]
     total_enemies = [enemics["totalPlayer1Enemy"], enemics["totalPlayer2Enemy"]]
 
@@ -49,9 +49,9 @@ if response.status_code == 200:
     plt.ylabel("Enemics")
 
     plt.tight_layout()
-
     plt.savefig(image_save_path)
-    plt.show()
+
+    print(f"Gràfics guardats a: {image_save_path}")
 
 else:
     print("Error al obtenir estadístiques:", response.status_code)
