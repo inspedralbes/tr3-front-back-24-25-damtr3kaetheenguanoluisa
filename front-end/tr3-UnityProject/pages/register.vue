@@ -166,7 +166,6 @@ html, body {
   align-items: center;
 }
 
-/* Background Elements */
 .bomberman-background {
   position: absolute;
   top: 0;
@@ -306,8 +305,8 @@ html, body {
 }
 
 .register-card {
-  height: 600px;
-  width: 600px;
+  height: 708px;
+  width: 700px;
   background-color: #14204e;
   border-radius: 20px;
   overflow: hidden;
@@ -375,7 +374,7 @@ html, body {
 }
 
 .register-form {
-  padding: 80px;
+  padding: 40px;
 }
 
 .form-group {
